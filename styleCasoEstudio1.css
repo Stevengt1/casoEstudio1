@@ -1,0 +1,7 @@
+.paginaInicio {
+    background: linear-gradient(to right, #f0f0f0, #d9d9d9);
+    font-family: 'Arial';
+}
+.paginaInicio h2{
+    color: red;
+}
