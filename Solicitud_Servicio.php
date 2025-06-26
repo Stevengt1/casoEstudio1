@@ -1,3 +1,4 @@
+<!-- Se recomienda que el código PHP esté al inicio del archivo -->
 <?php
 $ordenes = [
     [
@@ -102,7 +103,7 @@ function calcularClaseFila($orden)
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($ordenes as $orden): ?>
+                <?php foreach ($ordenes as $orden): ?> <!-- Se asigna el php en las zonas donde se vera afectada para no escribir echo en cada linea -->
                     <tr class="<?= calcularClaseFila($orden) ?>">
                         <td><?= $orden['cliente'] ?></td>
                         <td><?= $orden['placa'] ?></td>
@@ -116,7 +117,7 @@ function calcularClaseFila($orden)
         </table>
     </main>
 
-    <!-- Modal -->
+    <!-- El modal se agrega al final del documento HTML -->
     <div class="modal fade" id="modalFormularioCliente" tabindex="-1" aria-labelledby="modalFormularioClienteLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -166,7 +167,7 @@ function calcularClaseFila($orden)
                             <label for="fechaFinalizacion" class="form-label">Fecha de finalización</label>
                             <input type="date" class="form-control" id="fechaFinalizacion" required />
                         </div>
-                        <button type="submit" class="btn btn-success" id="btnGuardarOrden">Guardar orden</button>
+                        <button type="submit" class="btn btn-success">Guardar orden</button>
                     </form>
                 </div>
             </div>
