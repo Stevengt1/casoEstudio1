@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 timer: 1500,
                 showConfirmButton: false
             }).then(() => {
-                window.location.href = "Practica2.html";
+                window.location.href = "http://localhost/casoEstudio1/Solicitud_Servicio.php";
             });
         } else {
             Swal.fire({
@@ -37,28 +37,93 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             }
         });
+        
 });
 
+// Lectura y escritura de órdenes de servicio
+document.addEventListener("DOMContentLoaded", () => {
 
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector("#formularioUsuario");
-    const resultado = document.querySelector("#tablaUsuariosCarro");
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
+  const formulario = document.getElementById("formularioUsuario");
+  const tabla = document.getElementById("tablaOrdenesServicio").getElementsByTagName("tbody")[0];
+  const modal = new bootstrap.Modal(document.getElementById("modalFormularioCliente"));
 
-        const nombre = document.getElementById("nomCliente").value;
-        const placa = document.getElementById("numPlacaCarro").value;
-        const fechaIngreso = document.getElementById("fechaIngresoCarro").value;
-        const tipoServicio = document.getElementById("tipoServicio").value;
+  function agregarFila(orden) {
+    const tr = document.createElement("tr");
 
-        const nuevaFila = document.createElement("tr");
-        nuevaFila.innerHTML = `
-            <td>${nombre}</td>
-            <td>${placa}</td>
-            <td>${fechaIngreso}</td>
-            <td>${tipoServicio}</td>
-        `;
-        resultado.appendChild(nuevaFila);
-        form.reset();
-    });
+    const hoy = new Date();
+    const ingreso = new Date(orden.fechaIngreso);
+    let clase = "";
+    const diffDias = Math.floor((hoy - ingreso) / (1000 * 60 * 60 * 24));
+    if (diffDias > 7) clase = "table-warning";
+    if (orden.estadoPago.toLowerCase() === "no") clase = "table-danger";
+
+    if (clase) tr.classList.add(clase);
+
+    tr.innerHTML = `
+      <td>${orden.nombreCliente}</td>
+      <td>${orden.placaCarro}</td>
+      <td>${orden.fechaIngreso}</td>
+      <td>${orden.tipoServicio}</td>
+      <td>${orden.estadoPago}</td>
+      <td>${orden.fechaFinalizacion || ''}</td>
+    `;
+    tabla.appendChild(tr);
+  }
+
+  // Cargar órdenes de localStorage al cargar página
+  const ordenesLS = JSON.parse(localStorage.getItem("ordenes")) || [];
+  ordenesLS.forEach(agregarFila);
+
+  formulario.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const nombre = document.getElementById("nomCliente").value.trim();
+    const placa = document.getElementById("placaCarro").value.trim();
+    const ingreso = document.getElementById("fechaIngresoCarro").value;
+    const tipo = document.getElementById("tipoServicio").value;
+    const estadoServicio = document.getElementById("estadoServicioCarro").value; 
+    const pago = document.getElementById("estadoPagoServicio").value;
+    const fechaFinal = document.getElementById("fechaFinalizacion").value;
+
+    if (nombre && placa && ingreso && tipo && pago && fechaFinal) {
+      const nuevaOrden = {
+        nombreCliente: nombre,
+        placaCarro: placa,
+        fechaIngreso: ingreso,
+        tipoServicio: tipo,
+        estadoServicio: estadoServicio,
+        estadoPago: pago,
+        fechaFinalizacion: fechaFinal
+      };
+
+      // Guardar en localStorage
+      ordenesLS.push(nuevaOrden);
+      localStorage.setItem("ordenes", JSON.stringify(ordenesLS));
+
+      // Agregar fila a tabla
+      agregarFila(nuevaOrden);
+
+      // Mostrar alerta
+      Swal.fire({
+        icon: "success",
+        title: "Orden guardada",
+        text: "La orden se ha guardado correctamente.",
+        timer: 1500,
+        showConfirmButton: false
+      });
+
+      // Cerrar modal
+      modal.hide();
+
+      // Limpiar formulario
+      formulario.reset();
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "Advertencia",
+        text: "Por favor, complete todos los campos."
+      });
+    }
+  });
+
 });
